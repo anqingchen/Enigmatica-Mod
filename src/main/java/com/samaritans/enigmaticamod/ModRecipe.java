@@ -10,12 +10,12 @@ import net.minecraftforge.registries.ObjectHolder;
 @ObjectHolder(Enigmatica.MODID)
 public class ModRecipe {
 
-    public static final IRecipeSerializer<ShapelessStrippingRecipe> STRIPPING_SHAPELESS = null;
+    public static final IRecipeSerializer<ShapelessToolRecipe> STRIPPING_SHAPELESS = null;
 
     @SubscribeEvent
     public static void onRegisterRecipeSerializers(RegistryEvent.Register<IRecipeSerializer<?>> event) {
         event.getRegistry().registerAll(
-                Util.setup(new ShapelessStrippingRecipe.Serializer(), "stripping_shapeless")
+                Util.setup(new ShapelessToolRecipe.Serializer(), "tool_shapeless")
         );
     }
 }

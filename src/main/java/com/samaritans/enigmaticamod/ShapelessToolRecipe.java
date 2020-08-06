@@ -6,8 +6,8 @@ import com.google.gson.JsonParseException;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolItem;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipe;
@@ -19,14 +19,13 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.ForgeEventFactory;
 
-public class ShapelessStrippingRecipe extends ShapelessRecipe {
-
-    public ShapelessStrippingRecipe(ResourceLocation idIn, String groupIn, ItemStack recipeOutputIn,
+public class ShapelessToolRecipe extends ShapelessRecipe {
+    public ShapelessToolRecipe(ResourceLocation idIn, String groupIn, ItemStack recipeOutputIn,
 									NonNullList<Ingredient> recipeItemsIn) {
         super(idIn, groupIn, recipeOutputIn, recipeItemsIn);
     }
 
-    private ItemStack damageAxe(final ItemStack stack) {
+    private ItemStack damageTool(final ItemStack stack) {
 		final PlayerEntity craftingPlayer = ForgeHooks.getCraftingPlayer();
 		if (stack.attemptDamageItem(1, craftingPlayer.getEntityWorld().rand, craftingPlayer instanceof ServerPlayerEntity ? (ServerPlayerEntity) craftingPlayer : null)) {
 			ForgeEventFactory.onPlayerDestroyItem(craftingPlayer, stack, null);
@@ -43,8 +42,8 @@ public class ShapelessStrippingRecipe extends ShapelessRecipe {
 		for (int i = 0; i < remainingItems.size(); ++i) {
 			final ItemStack itemstack = inv.getStackInSlot(i);
 
-			if (!itemstack.isEmpty() && itemstack.getItem() instanceof AxeItem) {
-				remainingItems.set(i, damageAxe(itemstack.copy()));
+			if (!itemstack.isEmpty() && itemstack.getItem() instanceof ToolItem) {
+				remainingItems.set(i, damageTool(itemstack.copy()));
 			} else {
 				remainingItems.set(i, ForgeHooks.getContainerItem(itemstack));
 			}
@@ -53,8 +52,8 @@ public class ShapelessStrippingRecipe extends ShapelessRecipe {
 		return remainingItems;
 	}
 
-	public static class Serializer extends net.minecraftforge.registries.ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<ShapelessStrippingRecipe> {
-		public ShapelessStrippingRecipe read(ResourceLocation recipeId, JsonObject json) {
+	public static class Serializer extends net.minecraftforge.registries.ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<ShapelessToolRecipe> {
+		public ShapelessToolRecipe read(ResourceLocation recipeId, JsonObject json) {
 			String s = JSONUtils.getString(json, "group", "");
 			NonNullList<Ingredient> nonnulllist = readIngredients(JSONUtils.getJsonArray(json, "ingredients"));
 			if (nonnulllist.isEmpty()) {
@@ -63,7 +62,7 @@ public class ShapelessStrippingRecipe extends ShapelessRecipe {
 				throw new JsonParseException("Too many ingredients for shapeless recipe the max is " + 9);
 			} else {
 				ItemStack itemstack = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
-				return new ShapelessStrippingRecipe(recipeId, s, itemstack, nonnulllist);
+				return new ShapelessToolRecipe(recipeId, s, itemstack, nonnulllist);
 			}
 		}
 
@@ -78,7 +77,7 @@ public class ShapelessStrippingRecipe extends ShapelessRecipe {
 			return nonnulllist;
 		}
 
-		public ShapelessStrippingRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
+		public ShapelessToolRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
 			String s = buffer.readString(32767);
 			int i = buffer.readVarInt();
 			NonNullList<Ingredient> nonnulllist = NonNullList.withSize(i, Ingredient.EMPTY);
@@ -88,11 +87,11 @@ public class ShapelessStrippingRecipe extends ShapelessRecipe {
 			}
 
 			ItemStack itemstack = buffer.readItemStack();
-			return new ShapelessStrippingRecipe(recipeId, s, itemstack, nonnulllist);
+			return new ShapelessToolRecipe(recipeId, s, itemstack, nonnulllist);
 		}
 
 		@Override
-		public void write(PacketBuffer buffer, ShapelessStrippingRecipe recipe) {
+		public void write(PacketBuffer buffer, ShapelessToolRecipe recipe) {
 			buffer.writeString(recipe.getGroup());
 			buffer.writeVarInt(recipe.getIngredients().size());
 
