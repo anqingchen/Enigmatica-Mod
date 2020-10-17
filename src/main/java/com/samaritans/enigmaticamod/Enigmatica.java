@@ -67,7 +67,7 @@ public class Enigmatica
     public void onServerStarting(FMLServerStartingEvent event) {
         // do something when the server starts
         ForgeRegistries.ENCHANTMENTS.getEntries().forEach(entry -> {
-            ResourceLocation resourceLocation = entry.getKey();
+            ResourceLocation resourceLocation = entry.getKey().getLocation();
             Enchantment enchant = entry.getValue();
             LOGGER.debug("Enchantment: " + resourceLocation + " Type: " + enchant.type);
         });
